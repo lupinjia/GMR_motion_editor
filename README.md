@@ -2,7 +2,8 @@
 
 一个基于PyQt6的GMR机器人运动数据可视化编辑器，支持导入、剪辑和导出GMR格式数据。
 
-![](./docs/gmr_motion_editor_demo.gif)
+<!-- GIF演示图片 - 通过修改width属性调整宽度 (例如: width="600", width="80%") -->
+<img src="./docs/gmr_motion_editor_demo.gif" width="800" alt="GMR Motion Editor Demo">
 
 ## 功能特性
 
