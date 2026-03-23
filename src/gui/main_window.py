@@ -283,6 +283,7 @@ class MainWindow(QMainWindow):
             # 更新UI
             meta = self.data_manager.get_metadata()
             self.timeline.set_frame_count(meta['frame_count'])
+            self.timeline.set_fps(meta['fps'])  # 设置帧率用于时间计算
             self.motion_controller.set_frame_count(meta['frame_count'])
             self.motion_controller.set_fps(meta['fps'])
             
@@ -558,6 +559,7 @@ class MainWindow(QMainWindow):
             # 更新UI
             meta = self.data_manager.get_metadata()
             self.timeline.set_frame_count(meta['frame_count'])
+            self.timeline.set_fps(meta['fps'])  # 设置帧率用于时间计算
             self.motion_controller.set_frame_count(meta['frame_count'])
             self.motion_controller.set_fps(meta['fps'])
             

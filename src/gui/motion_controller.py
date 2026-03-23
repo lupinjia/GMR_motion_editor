@@ -55,6 +55,8 @@ class MotionController(QObject):
     def set_frame_count(self, count: int):
         """设置总帧数"""
         self.total_frames = count
+        # 重置裁剪范围到最开始和最末尾
+        self.clip_start = 0
         self.clip_end = count
         self.current_frame = 0
     

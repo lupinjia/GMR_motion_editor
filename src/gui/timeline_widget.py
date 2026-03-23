@@ -34,6 +34,7 @@ class TimelineWidget(QWidget):
         self.current_frame = 0
         self.clip_start = 0
         self.clip_end = 100
+        self.fps = 30.0  # 帧率，默认为30
         
         # 拖拽状态
         self.dragging = None  # 'progress', 'start_handle', 'end_handle'
@@ -94,17 +95,35 @@ class TimelineWidget(QWidget):
         
         self.update_labels()
     
-    def set_frame_count(self, count: int):
-        """设置总帧数"""
+    def set_frame_count(self, count: int, reset_clip: bool = True):
+        """设置总帧数
+        
+        Args:
+            count: 总帧数
+            reset_clip: 是否重置裁剪范围到最开始和最末尾（默认True）
+        """
         self.total_frames = max(1, count)
-        self.clip_end = self.total_frames
         self.current_frame = min(self.current_frame, self.total_frames - 1)
+        
+        if reset_clip:
+            # 重置裁剪范围到最开始和最末尾
+            self.clip_start = 0
+            self.clip_end = self.total_frames
+        else:
+            # 保持当前裁剪范围，但要确保在有效范围内
+            self.clip_start = min(self.clip_start, self.total_frames - 1)
+            self.clip_end = min(self.clip_end, self.total_frames)
+            if self.clip_start >= self.clip_end:
+                self.clip_start = 0
+                self.clip_end = self.total_frames
         
         self.start_spinbox.setRange(0, self.total_frames - 1)
         self.end_spinbox.setRange(0, self.total_frames)
+        self.start_spinbox.setValue(self.clip_start)
         self.end_spinbox.setValue(self.clip_end)
         
         self.timeline_canvas.total_frames = self.total_frames
+        self.timeline_canvas.clip_start = self.clip_start
         self.timeline_canvas.clip_end = self.clip_end
         self.timeline_canvas.update()
         self.update_labels()
@@ -160,14 +179,18 @@ class TimelineWidget(QWidget):
     
     def update_labels(self):
         """更新标签显示"""
-        # 默认fps 30
-        fps = 30
-        current_time = self.current_frame / fps
-        total_time = self.total_frames / fps
+        # 使用实际的fps计算时间
+        current_time = self.current_frame / self.fps if self.fps > 0 else 0
+        total_time = self.total_frames / self.fps if self.fps > 0 else 0
         
         self.frame_label.setText(f"Frame: {self.current_frame} / {self.total_frames}")
         self.time_label.setText(f"Time: {current_time:.2f}s / {total_time:.2f}s")
         self.clip_label.setText(f"Clip: {self.clip_start} - {self.clip_end}")
+    
+    def set_fps(self, fps: float):
+        """设置帧率"""
+        self.fps = max(1.0, float(fps))
+        self.update_labels()
 
 
 class TimelineCanvas(QWidget):
@@ -283,10 +306,14 @@ class TimelineCanvas(QWidget):
         elif self.dragging == 'start_handle':
             frame = min(frame, self.clip_end - 1)
             self.clip_start = max(0, frame)
+            # 当前帧跟随手柄移动
+            self.set_current_frame(self.clip_start)
             self.clip_changed.emit(self.clip_start, self.clip_end)
         elif self.dragging == 'end_handle':
             frame = max(frame, self.clip_start + 1)
             self.clip_end = min(self.total_frames, frame)
+            # 当前帧跟随手柄移动（移动到裁剪范围末尾前一帧）
+            self.set_current_frame(self.clip_end - 1)
             self.clip_changed.emit(self.clip_start, self.clip_end)
         
         self.update()
