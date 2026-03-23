@@ -1,54 +1,56 @@
 # GMR Motion Editor
 
-一个基于PyQt6的GMR机器人运动数据可视化编辑器，支持导入、剪辑和导出GMR格式数据。
+A PyQt6-based visualization editor for GMR robot motion data, supporting import, editing, and export of GMR format data.
 
-<!-- GIF演示图片 - 通过修改width属性调整宽度 (例如: width="600", width="80%") -->
+**[English](README.md) | [中文](README_CN.md)**
+
+<!-- Demo GIF - adjust width via the width attribute (e.g., width="600", width="80%") -->
 <img src="./docs/gmr_motion_editor_demo.gif" width="800" alt="GMR Motion Editor Demo">
 
-## 功能特性
+## Features
 
-- **导入/导出**: 支持加载和保存 `.pkl` 格式的GMR运动数据
-- **可视化**: 使用MuJoCo实时渲染机器人运动
-- **剪辑**: 简单的起止时间裁剪功能，导出选定片段
-- **多机器人支持**: 支持项目中所有17种机器人模型
+- **Import/Export**: Load and save `.pkl` format GMR motion data
+- **Visualization**: Real-time robot motion rendering using MuJoCo
+- **Editing**: Simple start/end time trimming with export functionality
+- **Multi-Robot Support**: Supports all 17 robot models in the project
 
-## 安装与配置
+## Installation & Configuration
 
-### 1. 放置位置（推荐）
+### 1. Placement (Recommended)
 
-**推荐做法**：将 `motion_editor` 文件夹放在 GMR 项目的根目录下：
+**Recommended**: Place the `motion_editor` folder in the root directory of the GMR project:
 
 ```
-GMR/                          # GMR项目根目录
+GMR/                          # GMR project root
 ├── general_motion_retargeting/
 ├── assets/
-├── motion_editor/            # <-- 放在这里
+├── motion_editor/            # <-- Place here
 │   ├── motion_editor.py
 │   ├── src/
 │   └── README.md
 └── ...
 ```
 
-**优点**：
-- 自动检测 GMR 路径，无需手动配置
-- 启动时会自动找到 GMR 项目的机器人模型和数据
+**Advantages**:
+- Automatic GMR path detection, no manual configuration needed
+- Automatically finds robot models and data from the GMR project on startup
 
-### 2. 放置在其他位置（可选）
+### 2. Placement in Other Locations (Optional)
 
-如果你希望将 `motion_editor` 放在其他位置（例如独立的工作目录），需要手动配置 GMR 路径：
+If you want to place `motion_editor` elsewhere (e.g., in a separate working directory), you need to manually configure the GMR path:
 
-**步骤**：
+**Steps**:
 
-1. **编辑配置文件**：`motion_editor/src/gui/config.py`
+1. **Edit configuration file**: `motion_editor/src/gui/config.py`
 
-2. **设置 GMR 路径**：
+2. **Set GMR path**:
 
 ```python
-# GMR项目的根目录路径
-GMR_ROOT_PATH = "/path/to/your/GMR"  # <-- 修改为你的GMR路径
+# Path to GMR project root directory
+GMR_ROOT_PATH = "/path/to/your/GMR"  # <-- Modify to your GMR path
 ```
 
-**示例**：
+**Example**:
 
 ```python
 # Linux/macOS
@@ -58,103 +60,103 @@ GMR_ROOT_PATH = "/home/username/Projects/GMR"
 GMR_ROOT_PATH = "C:/Users/username/Documents/GMR"
 ```
 
-### 3. 安装依赖
+### 3. Install Dependencies
 
-确保已安装 PyQt6：
+Ensure PyQt6 is installed:
 
 ```bash
 pip install PyQt6
 ```
 
-其他依赖（mujoco, numpy 等）需要在 GMR 项目中预先安装。
+Other dependencies (mujoco, numpy, etc.) need to be pre-installed in the GMR project.
 
-### 4. 验证配置
+### 4. Verify Configuration
 
-启动编辑器时会自动验证配置：
-- ✅ 如果配置正确，会显示 "Valid GMR installation"
-- ❌ 如果配置错误，控制台会提示错误信息和解决方案
+Configuration is automatically verified on startup:
+- ✅ If configured correctly, displays "Valid GMR installation"
+- ❌ If configuration is incorrect, console shows error message and solution
 
-**验证要求**：
-- 路径必须指向 GMR 项目的根目录
-- 必须包含 `general_motion_retargeting/` 和 `assets/` 目录
+**Verification Requirements**:
+- Path must point to GMR project root directory
+- Must contain `general_motion_retargeting/` and `assets/` directories
 
-## 使用方法
+## Usage
 
-### 启动编辑器
+### Launch Editor
 
 ```bash
-# 进入 motion_editor 目录
+# Navigate to motion_editor directory
 cd motion_editor
 
-# 启动编辑器
+# Launch editor
 python motion_editor.py
 
-# 或带文件路径启动（自动打开指定文件）
+# Or launch with file path (auto-opens specified file)
 python motion_editor.py /path/to/motion_data.pkl
 ```
 
-### 界面说明
+### Interface Guide
 
-1. **机器人选择**: 从下拉菜单选择对应的机器人类型
-2. **播放控制**: 
-   - ▶ Play / ⏸ Pause: 播放/暂停
-   - ⏹ Stop: 停止并重置到起始位置
-   - ⏮ / ⏭: 上一帧/下一帧
-   - ⏮⏮ / ⏭⏭: 跳到裁剪范围开始/结束
-3. **时间轴**:
-   - 蓝色手柄: 裁剪起点
-   - 红色手柄: 裁剪终点
-   - 黄色竖线: 当前帧位置
-4. **导出**: 点击"📤 Export Clip"导出裁剪后的片段
+1. **Robot Selection**: Select corresponding robot type from dropdown menu
+2. **Playback Controls**:
+   - ▶ Play / ⏸ Pause: Play/pause
+   - ⏹ Stop: Stop and reset to starting position
+   - ⏮ / ⏭: Previous/next frame
+   - ⏮⏮ / ⏭⏭: Jump to trim range start/end
+3. **Timeline**:
+   - Blue handle: Trim start point
+   - Red handle: Trim end point
+   - Yellow vertical line: Current frame position
+4. **Export**: Click "📤 Export Clip" to export trimmed segment
 
-### 快捷键
+### Keyboard Shortcuts
 
-- `Space`: 播放/暂停
-- `← / →`: 上一帧/下一帧
-- `Home`: 跳到裁剪范围开始
-- `End`: 跳到裁剪范围结束
-- `Ctrl+O`: 打开文件
-- `Ctrl+S`: 保存文件
-- `Ctrl+Shift+S`: 另存为
+- `Space`: Play/pause
+- `← / →`: Previous/next frame
+- `Home`: Jump to trim range start
+- `End`: Jump to trim range end
+- `Ctrl+O`: Open file
+- `Ctrl+S`: Save file
+- `Ctrl+Shift+S`: Save as
 
-## 示例工作流程
+## Example Workflow
 
-1. 运行 `python motion_editor.py`
-2. File → Open，选择一个 `.pkl` 运动数据文件
-3. 在机器人选择下拉框中选择对应的机器人类型
-4. 点击播放按钮查看运动
-5. 拖动时间轴上的蓝色和红色手柄设置裁剪范围
-6. 点击"Export Clip"导出裁剪后的片段
+1. Run `python motion_editor.py`
+2. File → Open, select a `.pkl` motion data file
+3. Select corresponding robot type from the robot dropdown
+4. Click play button to view motion
+5. Drag blue and red handles on timeline to set trim range
+6. Click "Export Clip" to export trimmed segment
 
-## 项目结构
+## Project Structure
 
 ```
 motion_editor/
-├── docs/                           # 文档
-│   ├── gmr_visualizer_design.md   # 设计文档
-│   └── implementation_plan.md     # 实施计划
-├── src/                           # 源代码
-│   └── gui/                       # GUI模块
+├── docs/                           # Documentation
+│   ├── gmr_visualizer_design.md   # Design document
+│   └── implementation_plan.md     # Implementation plan
+├── src/                           # Source code
+│   └── gui/                       # GUI module
 │       ├── __init__.py
-│       ├── config.py             # GMR路径配置 ⭐
-│       ├── gmr_manager.py        # 数据管理
-│       ├── motion_controller.py  # 播放控制
-│       ├── timeline_widget.py    # 时间轴控件
-│       └── main_window.py        # 主窗口
-├── tests/                         # 测试文件
+│       ├── config.py             # GMR path configuration ⭐
+│       ├── gmr_manager.py        # Data management
+│       ├── motion_controller.py  # Playback control
+│       ├── timeline_widget.py    # Timeline widget
+│       └── main_window.py        # Main window
+├── tests/                         # Test files
 │   ├── test_gmr_manager.py
 │   ├── test_timeline_widget.py
 │   └── test_motion_controller.py
-├── motion_editor.py              # 启动脚本
-└── README.md                     # 本文件
+├── motion_editor.py              # Launch script
+└── README.md                     # This file
 ```
 
-**重要文件**：
-- `src/gui/config.py` - **GMR路径配置文件**，编辑此文件设置GMR项目路径
+**Important Files**:
+- `src/gui/config.py` - **GMR path configuration file**, edit this to set GMR project path
 
-## 支持的机器人
+## Supported Robots
 
-支持GMR项目中的所有17种机器人模型：
+Supports all 17 robot models in the GMR project:
 
 - Unitree G1 (29 DOF)
 - Unitree G1 with Hands (43 DOF)
@@ -175,9 +177,9 @@ motion_editor/
 - PAL Robotics' Talos (30 DOF)
 - Fourier GR3 (31 DOF)
 
-## 开发说明
+## Development
 
-### 运行测试
+### Run Tests
 
 ```bash
 cd motion_editor
@@ -186,13 +188,13 @@ python tests/test_timeline_widget.py
 python tests/test_motion_controller.py
 ```
 
-### 技术栈
+### Tech Stack
 
 - Python 3.10+
-- PyQt6 (GUI框架)
-- MuJoCo (3D渲染)
-- NumPy (数据处理)
+- PyQt6 (GUI framework)
+- MuJoCo (3D rendering)
+- NumPy (Data processing)
 
-## 许可证
+## License
 
-本项目基于GMR项目，遵循MIT许可证。
+This project is based on the GMR project and follows the MIT License.
