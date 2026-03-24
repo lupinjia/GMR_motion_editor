@@ -11,6 +11,8 @@
 
 - **导入/导出**: 支持加载和保存 `.pkl` 格式的GMR运动数据
 - **可视化**: 使用MuJoCo实时渲染机器人运动
+- **波形显示**: 独立窗口显示各数据维度的波形曲线，支持实时帧同步
+   <img src="./docs/waveform_display.png" width="600" alt="Waveform Display Window">
 - **剪辑**: 简单的起止时间裁剪功能，导出选定片段
 - **多机器人支持**: 支持项目中所有17种机器人模型
 
@@ -109,6 +111,25 @@ python motion_editor.py /path/to/motion_data.pkl
    - 黄色竖线: 当前帧位置
 4. **导出**: 点击"📤 Export Clip"导出裁剪后的片段
 
+### 波形显示
+
+波形显示窗口提供运动数据的详细可视化：
+
+1. **打开波形窗口**: View → Waveform Display（或按 `Ctrl+W`）
+2. **选择数据**: 从下拉菜单中选择（如 root_pos、dof_pos、root_euler 等）
+3. **查看波形**: 每个维度以单独一行显示，包含：
+   - 完整波形曲线
+   - 维度名称（彩色标签）
+   - 当前值（Cur）- 实时更新
+   - 最小值（Min）
+   - 最大值（Max）
+   - 黄色竖线指示当前帧位置
+4. **支持的数据类型**:
+   - 1D数组：单条波形
+   - 2D数组：每维一行（如3D位置显示X、Y、Z）
+   - 3D数组：展平显示（如关键点位置显示为 Body 0 X、Body 0 Y等）
+   - 标量值：显示为水平直线
+
 ### 快捷键
 
 - `Space`: 播放/暂停
@@ -118,6 +139,7 @@ python motion_editor.py /path/to/motion_data.pkl
 - `Ctrl+O`: 打开文件
 - `Ctrl+S`: 保存文件
 - `Ctrl+Shift+S`: 另存为
+- `Ctrl+W`: 打开波形显示窗口
 
 ## 示例工作流程
 
@@ -142,6 +164,7 @@ motion_editor/
 │       ├── gmr_manager.py        # 数据管理
 │       ├── motion_controller.py  # 播放控制
 │       ├── timeline_widget.py    # 时间轴控件
+│       ├── wave_widget.py        # 波形显示控件
 │       └── main_window.py        # 主窗口
 ├── tests/                         # 测试文件
 │   ├── test_gmr_manager.py

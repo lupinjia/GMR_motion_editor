@@ -11,6 +11,8 @@ A PyQt6-based visualization editor for GMR robot motion data, supporting import,
 
 - **Import/Export**: Load and save `.pkl` format GMR motion data
 - **Visualization**: Real-time robot motion rendering using MuJoCo
+- **Waveform Display**: Independent window showing waveform curves for each data dimension with real-time frame synchronization
+   <img src="./docs/waveform_display.png" width="600" alt="Waveform Display Window">
 - **Editing**: Simple start/end time trimming with export functionality
 - **Multi-Robot Support**: Supports all 17 robot models in the project
 
@@ -109,6 +111,25 @@ python motion_editor.py /path/to/motion_data.pkl
    - Yellow vertical line: Current frame position
 4. **Export**: Click "📤 Export Clip" to export trimmed segment
 
+### Waveform Display
+
+The Waveform Display window provides detailed visualization of motion data:
+
+1. **Open Waveform Window**: View → Waveform Display (or press `Ctrl+W`)
+2. **Select Data**: Choose from the dropdown menu (e.g., root_pos, dof_pos, root_euler)
+3. **View Waveforms**: Each dimension is displayed in a separate row with:
+   - Full waveform curve
+   - Dimension name (colored label)
+   - Current value (Cur) - updated in real-time
+   - Minimum value (Min)
+   - Maximum value (Max)
+   - Yellow vertical line indicating current frame position
+4. **Supported Data Types**:
+   - 1D arrays: Single waveform
+   - 2D arrays: One row per dimension (e.g., 3D position shows X, Y, Z)
+   - 3D arrays: Flattened display (e.g., key_body_pos shows Body 0 X, Body 0 Y, etc.)
+   - Scalar values: Displayed as constant horizontal lines
+
 ### Keyboard Shortcuts
 
 - `Space`: Play/pause
@@ -118,6 +139,7 @@ python motion_editor.py /path/to/motion_data.pkl
 - `Ctrl+O`: Open file
 - `Ctrl+S`: Save file
 - `Ctrl+Shift+S`: Save as
+- `Ctrl+W`: Open Waveform Display window
 
 ## Example Workflow
 
@@ -142,6 +164,7 @@ motion_editor/
 │       ├── gmr_manager.py        # Data management
 │       ├── motion_controller.py  # Playback control
 │       ├── timeline_widget.py    # Timeline widget
+│       ├── wave_widget.py        # Waveform display widget
 │       └── main_window.py        # Main window
 ├── tests/                         # Test files
 │   ├── test_gmr_manager.py

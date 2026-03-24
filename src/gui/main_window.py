@@ -20,6 +20,7 @@ from PyQt6.QtGui import QAction, QKeySequence
 from .gmr_manager import GMRDataManager
 from .motion_controller import MotionController
 from .timeline_widget import TimelineWidget
+from .wave_widget import WaveformWindow, WaveformDockWidget
 from . import config
 
 # 设置GMR路径并导入模块
@@ -46,7 +47,7 @@ class MainWindow(QMainWindow):
         super().__init__()
         
         self.setWindowTitle("GMR Motion Editor")
-        self.setMinimumSize(800, 600)
+        self.setMinimumSize(800, 400)
         
         # 检查GMR路径配置
         self.check_gmr_config()
@@ -59,6 +60,9 @@ class MainWindow(QMainWindow):
         # 当前状态
         self.current_file = None
         self.current_robot = None
+        
+        # 波形显示窗口
+        self.waveform_window = None
         
         self.init_ui()
         self.init_menu()
@@ -230,6 +234,14 @@ class MainWindow(QMainWindow):
         toggle_loop_action.triggered.connect(self.loop_check.setChecked)
         view_menu.addAction(toggle_loop_action)
         
+        view_menu.addSeparator()
+        
+        # 波形显示窗口
+        waveform_action = QAction("&Waveform Display", self)
+        waveform_action.setShortcut(QKeySequence("Ctrl+W"))
+        waveform_action.triggered.connect(self.open_waveform_window)
+        view_menu.addAction(waveform_action)
+        
         # Help菜单
         help_menu = menubar.addMenu("&Help")
         
@@ -295,16 +307,21 @@ class MainWindow(QMainWindow):
             info += f"Duration: {meta['duration']:.2f}s | "
             info += f"FPS: {meta['fps']}"
             self.info_label.setText(info)
-            
+
             self.export_btn.setEnabled(True)
             self.statusbar.showMessage(f"Loaded: {file_path}")
-            
+
             # 初始化viewer
             self.init_viewer()
-            
+
+            # 如果波形窗口已打开，更新数据
+            if self.waveform_window is not None and self.waveform_window.isVisible():
+                self.waveform_window.update_data()
+                self.waveform_window.set_current_frame(0)
+
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Failed to load file:\n{str(e)}")
-    
+
     def save_file(self):
         """保存文件"""
         if not self.current_file:
@@ -464,6 +481,10 @@ class MainWindow(QMainWindow):
         """控制器帧改变"""
         self.timeline.set_current_frame(frame)
         self.update_viewer()
+        
+        # 更新波形窗口的当前帧位置
+        if self.waveform_window is not None and self.waveform_window.isVisible():
+            self.waveform_window.set_current_frame(frame)
     
     def on_playback_started(self):
         """播放开始"""
@@ -515,6 +536,26 @@ class MainWindow(QMainWindow):
             # 重新初始化viewer
             self.init_viewer()
     
+    def open_waveform_window(self):
+        """打开波形显示窗口"""
+        # 检查波形窗口是否已存在且可见
+        if self.waveform_window is not None and self.waveform_window.isVisible():
+            # 如果已存在，只是激活它
+            self.waveform_window.raise_()
+            self.waveform_window.activateWindow()
+            return
+        
+        # 创建新的波形窗口（独立窗口，不设置父对象）
+        self.waveform_window = WaveformWindow(None, self.data_manager)
+        
+        # 如果已经加载了数据，更新可用keys
+        if self.data_manager.data is not None:
+            self.waveform_window.update_data()
+            # 同步当前帧位置
+            self.waveform_window.set_current_frame(self.motion_controller.current_frame)
+        
+        self.waveform_window.show()
+    
     def show_about(self):
         """显示关于对话框"""
         QMessageBox.about(self, "About GMR Motion Editor",
@@ -544,6 +585,8 @@ class MainWindow(QMainWindow):
         """关闭事件"""
         if self.viewer is not None:
             self.viewer.close()
+        if self.waveform_window is not None:
+            self.waveform_window.close()
         event.accept()
     
     def open_file_at_path(self, file_path: str):
