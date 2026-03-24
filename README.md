@@ -12,6 +12,7 @@ A PyQt6-based visualization editor for GMR robot motion data, supporting import,
 - **Import/Export**: Load and save `.pkl` format GMR motion data
 - **Visualization**: Real-time robot motion rendering using MuJoCo
 - **Waveform Display**: Independent window showing waveform curves for each data dimension with real-time frame synchronization
+
   <img src="./docs/waveform_display.png" width="600" alt="Waveform Display Window">
 - **Editing**: Simple start/end time trimming with export functionality
 - **Multi-Robot Support**: Supports all 17 robot models in the project
