@@ -8,6 +8,7 @@ from .gmr_manager import GMRDataManager
 from .motion_controller import MotionController
 from .timeline_widget import TimelineWidget
 from .wave_widget import WaveformWindow, WaveformCanvas, WaveformDockWidget
+from .gait_detector import GaitCycleDetector
 from .main_window import MainWindow
 
 __version__ = "1.0.0"
@@ -19,6 +20,7 @@ __all__ = [
     'WaveformWindow',
     'WaveformCanvas',
     'WaveformDockWidget',
+    'GaitCycleDetector',
     'MainWindow',
 ]
 

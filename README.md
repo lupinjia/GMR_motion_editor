@@ -14,6 +14,7 @@ A PyQt6-based visualization editor for GMR robot motion data, supporting import,
 - **Waveform Display**: Independent window showing waveform curves for each data dimension with real-time frame synchronization
 
   <img src="./docs/waveform_display.png" width="600" alt="Waveform Display Window">
+- **Gait Cycle Detection**: Automatically estimates complete gait cycle duration (from one heel strike to the next ipsilateral heel strike, including stance and swing phases)
 - **Editing**: Simple start/end time trimming with export functionality
 - **Multi-Robot Support**: Supports all 17 robot models in the project
 
@@ -111,6 +112,33 @@ python motion_editor.py /path/to/motion_data.pkl
    - Red handle: Trim end point
    - Yellow vertical line: Current frame position
 4. **Export**: Click "📤 Export Clip" to export trimmed segment
+
+### Gait Cycle Detection
+
+The editor automatically detects and displays the gait cycle duration in the main window (shown next to the robot selector):
+
+1. **What is Gait Cycle**: 
+   - Complete gait cycle = Time from one heel strike to the next ipsilateral (same-side) heel strike
+   - Includes both **Stance Phase** (foot on ground) and **Swing Phase** (foot in air)
+   - This is the standard definition in gait analysis
+   - The value appearing on the main window is half of the gait cycle
+
+2. **Detection Method**:
+   - Uses 4 complementary algorithms:
+     - **Position Minima**: Detects lowest center of mass (double support phase)
+     - **Velocity Peaks**: Detects maximum downward velocity (heel strike)
+     - **Acceleration Peaks**: Detects ground impact
+     - **Zero Crossing**: Detects velocity transition from negative to positive
+   - Results are fused with weighted averaging for robustness
+
+3. **Confidence Indicator**:
+   - **✓ Green**: High confidence (≥70%) - Reliable result
+   - **~ Yellow**: Medium confidence (≥40%) - Acceptable result
+   - **? Red**: Low confidence (<40%) - Check data quality
+
+4. **Display Format**:
+   - Less than 1 second: Displayed in milliseconds (e.g., "Gait: 820ms")
+   - 1 second or more: Displayed in seconds (e.g., "Gait: 1.25s")
 
 ### Waveform Display
 

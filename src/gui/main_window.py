@@ -21,6 +21,7 @@ from .gmr_manager import GMRDataManager
 from .motion_controller import MotionController
 from .timeline_widget import TimelineWidget
 from .wave_widget import WaveformWindow, WaveformDockWidget
+from .gait_detector import GaitCycleDetector
 from . import config
 
 # 设置GMR路径并导入模块
@@ -55,6 +56,7 @@ class MainWindow(QMainWindow):
         # 组件
         self.data_manager = GMRDataManager()
         self.motion_controller = MotionController()
+        self.gait_detector = GaitCycleDetector()
         self.viewer = None
         
         # 当前状态
@@ -108,7 +110,12 @@ class MainWindow(QMainWindow):
         
         self.info_label = QLabel("No file loaded")
         robot_layout.addWidget(self.info_label)
-        
+
+        # 步态周期显示
+        self.gait_label = QLabel("Gait: --")
+        self.gait_label.setStyleSheet("font-weight: bold; color: #4CAF50; padding-left: 10px;")
+        robot_layout.addWidget(self.gait_label)
+
         layout.addWidget(robot_group)
         
         # 控制区
@@ -307,6 +314,9 @@ class MainWindow(QMainWindow):
             info += f"Duration: {meta['duration']:.2f}s | "
             info += f"FPS: {meta['fps']}"
             self.info_label.setText(info)
+
+            # 检测步态周期
+            self.detect_gait_cycle()
 
             self.export_btn.setEnabled(True)
             self.statusbar.showMessage(f"Loaded: {file_path}")
@@ -581,6 +591,60 @@ class MainWindow(QMainWindow):
         else:
             super().keyPressEvent(event)
     
+    def detect_gait_cycle(self):
+        """检测步态周期并更新UI"""
+        try:
+            if self.data_manager.data is None:
+                self.gait_label.setText("Gait: --")
+                return
+
+            # 检查是否有足够的数据（只需要root_pos和root_lin_vel）
+            required_keys = ['root_pos', 'root_lin_vel']
+            for key in required_keys:
+                if key not in self.data_manager.data or self.data_manager.data[key] is None:
+                    self.gait_label.setText("Gait: N/A")
+                    return
+
+            # 运行步态周期检测
+            period = self.gait_detector.detect(self.data_manager.data)
+
+            if period is not None:
+                # 格式化显示
+                if period < 1.0:
+                    gait_str = f"Gait: {period*1000:.0f}ms"
+                else:
+                    gait_str = f"Gait: {period:.2f}s"
+
+                # 添加置信度指示
+                if self.gait_detector.confidence >= 0.7:
+                    gait_str += " ✓"
+                    color = "#4CAF50"  # 绿色 - 高置信度
+                elif self.gait_detector.confidence >= 0.4:
+                    gait_str += " ~"
+                    color = "#FFC107"  # 黄色 - 中等置信度
+                else:
+                    gait_str += " ?"
+                    color = "#FF5722"  # 红色 - 低置信度
+
+                self.gait_label.setText(gait_str)
+                self.gait_label.setStyleSheet(f"font-weight: bold; color: {color}; padding-left: 10px;")
+
+                # 在控制台输出详细信息
+                print(f"\n{'='*60}")
+                print("步态周期检测结果")
+                print(f"{'='*60}")
+                print(self.gait_detector.get_detailed_info())
+                print(f"{'='*60}\n")
+            else:
+                self.gait_label.setText("Gait: --")
+                self.gait_label.setStyleSheet("font-weight: bold; color: #888; padding-left: 10px;")
+                self.gait_label.setStyleSheet("font-weight: bold; color: #888; padding-left: 10px;")
+
+        except Exception as e:
+            print(f"Error detecting gait cycle: {e}")
+            self.gait_label.setText("Gait: Err")
+            self.gait_label.setStyleSheet("font-weight: bold; color: #FF5722; padding-left: 10px;")
+
     def closeEvent(self, event):
         """关闭事件"""
         if self.viewer is not None:
