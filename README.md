@@ -74,6 +74,30 @@ pip install PyQt6
 
 Other dependencies (mujoco, numpy, etc.) need to be pre-installed in the GMR project.
 
+#### Linux System Dependencies
+
+On Linux systems, you need to install additional X11 libraries for Qt to work properly:
+
+**Ubuntu/Debian:**
+```bash
+sudo apt update
+sudo apt install libxcb-cursor0
+```
+
+**RHEL/CentOS/Fedora:**
+```bash
+sudo yum install libxcb-cursor
+# or
+sudo dnf install libxcb-cursor
+```
+
+**Arch Linux:**
+```bash
+sudo pacman -S libxcb
+```
+
+**Note:** If you encounter the error `qt.qpa.plugin: Could not load the Qt platform plugin "xcb"`, it means the `libxcb-cursor0` library is missing. Installing the package above will fix this issue.
+
 ### 4. Verify Configuration
 
 Configuration is automatically verified on startup:

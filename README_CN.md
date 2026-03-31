@@ -74,6 +74,30 @@ pip install PyQt6
 
 其他依赖（mujoco, numpy 等）需要在 GMR 项目中预先安装。
 
+#### Linux 系统依赖
+
+在 Linux 系统上，需要安装额外的 X11 库才能使 Qt 正常工作：
+
+**Ubuntu/Debian：**
+```bash
+sudo apt update
+sudo apt install libxcb-cursor0
+```
+
+**RHEL/CentOS/Fedora：**
+```bash
+sudo yum install libxcb-cursor
+# 或
+sudo dnf install libxcb-cursor
+```
+
+**Arch Linux：**
+```bash
+sudo pacman -S libxcb
+```
+
+**注意：** 如果遇到错误 `qt.qpa.plugin: Could not load the Qt platform plugin "xcb"`，说明缺少 `libxcb-cursor0` 库。安装上述包即可解决此问题。
+
 ### 4. 验证配置
 
 启动编辑器时会自动验证配置：
